@@ -40,14 +40,34 @@ const MONGO_URI = process.env.MONGO_URI;
 connectDB(MONGO_URI); 
 
 // --- Middlewares Básicos ---
-// CORS mejorado
-const allowedOrigins = [
-  process.env.FRONTEND_URL,
-  'http://localhost:5173'
-].filter(Boolean);
-
+// CORS mejorado: permite todos los subdominios de Vercel y localhost
 const corsOptions = {
-  origin: allowedOrigins,
+  origin: (origin, callback) => {
+    // Permitir requests sin origin (mobile apps, curl, etc)
+    if (!origin) return callback(null, true);
+    
+    // Whitelist de orígenes permitidos
+    const allowedOrigins = [
+      'http://localhost:5173',
+      'http://localhost:3000',
+      process.env.FRONTEND_URL,
+      /https:\/\/katze.*\.vercel\.app$/  // Todos los subdominios de Vercel
+    ].filter(Boolean);
+    
+    // Verifica si el origin está permitido (string o regex)
+    const isAllowed = allowedOrigins.some(allowed => {
+      if (allowed instanceof RegExp) {
+        return allowed.test(origin);
+      }
+      return allowed === origin;
+    });
+    
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS: Origin no permitido'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
