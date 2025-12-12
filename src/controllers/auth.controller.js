@@ -27,11 +27,16 @@ export const registrarUsuario = async (req, res) => {
     }
     const salt = await bcrypt.genSalt(10);
     const contrasenaHash = await bcrypt.hash(contrasena, salt);
+
+    // Usuarios no admin quedan pendientes por aprobación manual
+    const estadoCuenta = tipoUsuario === 'Administrador' ? 'aprobado' : 'pendiente';
+
     const nuevoUsuario = await Usuario.create({
         nombre,
         correo,
         contrasena: contrasenaHash,
-        tipoUsuario: tipoUsuario || 'Adoptante'
+        tipoUsuario: tipoUsuario || 'Adoptante',
+        estadoCuenta
     });
     const token = generarToken(nuevoUsuario);
     res.status(201).json({
@@ -62,12 +67,18 @@ export const iniciarSesion = async (req, res) => {
     if (!usuario || !(await bcrypt.compare(contrasena, usuario.contrasena))) {
         return res.status(401).json({ mensaje: 'Credenciales inválidas.' });
     }
+
+    // Si tiene control de aprobación y no está aprobado, no deja iniciar
+    if (usuario.estadoCuenta && usuario.estadoCuenta !== 'aprobado') {
+        return res.status(403).json({ mensaje: 'Cuenta pendiente de aprobación por un administrador.' });
+    }
     const token = generarToken(usuario);
     res.json({
         id: usuario._id,
         nombre: usuario.nombre,
         correo: usuario.correo,
         tipoUsuario: usuario.tipoUsuario,
+        estadoCuenta: usuario.estadoCuenta || 'aprobado',
         token
     });
 };

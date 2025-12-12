@@ -7,6 +7,74 @@ import Mascota from '../models/Mascota.js';
 import SolicitudAdopcion from '../models/SolicitudAdopcion.js';
 
 /**
+ * Lista usuarios con estadoCuenta = 'pendiente'.
+ * @route GET /api/usuarios/pendientes
+ * REQUIERE: requerirRol('Administrador')
+ */
+export const obtenerUsuariosPendientes = async (req, res) => {
+    try {
+        const usuarios = await Usuario.find({ estadoCuenta: 'pendiente' }).select('-contrasena');
+        res.status(200).json(usuarios);
+    } catch (error) {
+        res.status(500).json({ mensaje: 'Error al obtener usuarios pendientes.', error: error.message });
+    }
+};
+
+/**
+ * Aprueba un usuario (estadoCuenta = 'aprobado').
+ * @route PATCH /api/usuarios/:id/aprobar
+ * REQUIERE: requerirRol('Administrador')
+ */
+export const aprobarUsuario = async (req, res) => {
+    try {
+        const usuarioId = req.params.id;
+        if (!mongoose.Types.ObjectId.isValid(usuarioId)) {
+            return res.status(400).json({ mensaje: 'ID de usuario inválido.' });
+        }
+        const usuario = await Usuario.findByIdAndUpdate(
+            usuarioId,
+            { estadoCuenta: 'aprobado' },
+            { new: true, runValidators: true }
+        ).select('-contrasena');
+
+        if (!usuario) {
+            return res.status(404).json({ mensaje: 'Usuario no encontrado.' });
+        }
+
+        res.status(200).json({ mensaje: 'Usuario aprobado.', usuario });
+    } catch (error) {
+        res.status(500).json({ mensaje: 'Error al aprobar usuario.', error: error.message });
+    }
+};
+
+/**
+ * Rechaza un usuario (estadoCuenta = 'rechazado').
+ * @route PATCH /api/usuarios/:id/rechazar
+ * REQUIERE: requerirRol('Administrador')
+ */
+export const rechazarUsuario = async (req, res) => {
+    try {
+        const usuarioId = req.params.id;
+        if (!mongoose.Types.ObjectId.isValid(usuarioId)) {
+            return res.status(400).json({ mensaje: 'ID de usuario inválido.' });
+        }
+        const usuario = await Usuario.findByIdAndUpdate(
+            usuarioId,
+            { estadoCuenta: 'rechazado' },
+            { new: true, runValidators: true }
+        ).select('-contrasena');
+
+        if (!usuario) {
+            return res.status(404).json({ mensaje: 'Usuario no encontrado.' });
+        }
+
+        res.status(200).json({ mensaje: 'Usuario rechazado.', usuario });
+    } catch (error) {
+        res.status(500).json({ mensaje: 'Error al rechazar usuario.', error: error.message });
+    }
+};
+
+/**
  * Obtiene la lista de todos los usuarios del sistema.
  * @route GET /api/usuarios
  * REQUIERE: requerirRol('Administrador')

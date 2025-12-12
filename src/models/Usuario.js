@@ -36,6 +36,13 @@ const usuarioSchema = new mongoose.Schema({
     required: true
   },
 
+  // Estado de la cuenta para permitir flujo de aprobación manual
+  estadoCuenta: {
+    type: String,
+    enum: ['pendiente', 'aprobado', 'rechazado'],
+    default: 'pendiente'
+  },
+
   // Campos específicos para Rescatista
   direccionResguardo: { type: String, trim: true },
   capacidadMaxima: { type: Number, default: 0 },

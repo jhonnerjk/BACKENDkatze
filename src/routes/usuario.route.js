@@ -9,7 +9,10 @@ import {
     obtenerUsuarios,
     obtenerUsuarioPorId,
     actualizarUsuario,
-    eliminarUsuario
+    eliminarUsuario,
+    obtenerUsuariosPendientes,
+    aprobarUsuario,
+    rechazarUsuario
 } from '../controllers/usuario.controller.js';
 
 const router = express.Router();
@@ -33,6 +36,14 @@ router.get(
     obtenerUsuarios
 );
 
+// Ruta: GET /api/usuarios/pendientes
+router.get(
+    '/pendientes',
+    requerirAutenticacion,
+    requerirRol('Administrador'),
+    obtenerUsuariosPendientes
+);
+
 // Ruta: GET /api/usuarios/:id
 // Obtiene un usuario específico por ID.
 router.get(
@@ -53,6 +64,26 @@ router.put(
     [param('id').isMongoId().withMessage('ID inválido')],
     handleValidation,
     actualizarUsuario
+);
+
+// Ruta: PATCH /api/usuarios/:id/aprobar
+router.patch(
+    '/:id/aprobar',
+    requerirAutenticacion,
+    requerirRol('Administrador'),
+    [param('id').isMongoId().withMessage('ID inválido')],
+    handleValidation,
+    aprobarUsuario
+);
+
+// Ruta: PATCH /api/usuarios/:id/rechazar
+router.patch(
+    '/:id/rechazar',
+    requerirAutenticacion,
+    requerirRol('Administrador'),
+    [param('id').isMongoId().withMessage('ID inválido')],
+    handleValidation,
+    rechazarUsuario
 );
 
 // Ruta: DELETE /api/usuarios/:id
