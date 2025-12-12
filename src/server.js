@@ -33,7 +33,8 @@ const io = new Server(httpServer, {
 });
 
 const PORT = process.env.PORT || 5000;
-const MONGO_URI = process.env.MONGODB_URI;
+// Usamos la variable de entorno MONGO_URI configurada en Render/entornos
+const MONGO_URI = process.env.MONGO_URI;
 
 // Conectar a la base de datos
 connectDB(MONGO_URI); 
