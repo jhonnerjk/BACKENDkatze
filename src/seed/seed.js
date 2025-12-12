@@ -14,9 +14,9 @@ const SALT_ROUNDS = 10;
 
 // 1. Datos de Usuarios
 const usuariosDummy = [
-    { nombre: 'Admin Master', correo: 'admin@test.com', contrasena: PASSWORD_BASE, tipoUsuario: 'Administrador' },
-    { nombre: 'Maria Rescatista', correo: 'maria@test.com', contrasena: PASSWORD_BASE, tipoUsuario: 'Rescatista', ubicacion: 'Santa Cruz' },
-    { nombre: 'Pedro Adoptante', correo: 'pedro@test.com', contrasena: PASSWORD_BASE, tipoUsuario: 'Adoptante' },
+    { nombre: 'Admin Master', correo: 'admin@test.com', contrasena: PASSWORD_BASE, tipoUsuario: 'Administrador', estadoCuenta: 'aprobado' },
+    { nombre: 'Maria Rescatista', correo: 'maria@test.com', contrasena: PASSWORD_BASE, tipoUsuario: 'Rescatista', ubicacion: 'Santa Cruz', estadoCuenta: 'aprobado' },
+    { nombre: 'Pedro Adoptante', correo: 'pedro@test.com', contrasena: PASSWORD_BASE, tipoUsuario: 'Adoptante', estadoCuenta: 'aprobado' },
 ];
 
 // 2. Función Principal
